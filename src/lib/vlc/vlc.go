@@ -10,7 +10,11 @@ type encodingTable map[rune]string
 
 type BinaryChunks []string
 
+type HexChunks []string
+
 type BinaryChunk string
+
+type HexChunk string
 
 const chunkSize = 8
 
@@ -24,12 +28,21 @@ func Encode(str string) string {
 	// slise text to 10110011 01011011 10010010 10010110
 	chunks := splitByChunk(binaryStr, chunkSize)
 
-	if len(chunks) == 0 { // TODO: deleate
-		return ""
-	}
+	//if len(chunks) == 0 { // TODO: deleate
+	//	return ""
+	//}
 
 	// modifi to 3A F0 D3
+	hexChunks := toHex(chunks)
 	return ""
+}
+
+func toHex(chunks BinaryChunks) HexChunks {
+	hexChunks := make(HexChunks, len(chunks))
+
+	for _, binChunk := range chunks {
+
+	}
 }
 
 func splitByChunk(str string, chunkSize int) BinaryChunks {
