@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"archiver/src/lib/vlc"
 	"errors"
 	"io"
 	"os"
@@ -37,8 +38,7 @@ func pack(_ *cobra.Command, args []string) {
 		handleError(err)
 	}
 
-	//packed := Encode(data)
-	packed := string(data) // TODO: remove
+	packed := vlc.Encode(string(data))
 
 	err = os.WriteFile(packedFileName(filePath), []byte(packed), 0644)
 	if err != nil {

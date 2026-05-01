@@ -139,3 +139,50 @@ func Test_splitByChunk(t *testing.T) {
 		})
 	}
 }
+
+func TestBinaryChunks_toHex(t *testing.T) {
+	tests := []struct {
+		name  string
+		chunk BinaryChunks
+		want  HexChunks
+	}{
+		{
+			name:  "case 1",
+			chunk: BinaryChunks{"10011010", "0000010"},
+			want:  HexChunks{"9A", "02"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.chunk.toHex(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("toHex() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEncode(t *testing.T) {
+	type args struct {
+		str string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "default",
+			args: args{
+				str: "My name is Ted",
+			},
+			want: "20 30 3C 18 77 4A E4 4D 28",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Encode(tt.args.str); got != tt.want {
+				t.Errorf("Encode() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

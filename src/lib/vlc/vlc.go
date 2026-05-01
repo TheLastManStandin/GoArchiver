@@ -1,6 +1,8 @@
 package vlc
 
 import (
+	"fmt"
+	"strconv"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -8,9 +10,9 @@ import (
 
 type encodingTable map[rune]string
 
-type BinaryChunks []string
+type BinaryChunks []BinaryChunk
 
-type HexChunks []string
+type HexChunks []HexChunk
 
 type BinaryChunk string
 
@@ -28,21 +30,58 @@ func Encode(str string) string {
 	// slise text to 10110011 01011011 10010010 10010110
 	chunks := splitByChunk(binaryStr, chunkSize)
 
-	//if len(chunks) == 0 { // TODO: deleate
-	//	return ""
-	//}
-
 	// modifi to 3A F0 D3
-	hexChunks := toHex(chunks)
-	return ""
+	hexChunks := chunks.toHex()
+
+	return hexChunks.toStr()
 }
 
-func toHex(chunks BinaryChunks) HexChunks {
-	hexChunks := make(HexChunks, len(chunks))
+func (chunks HexChunks) toStr() string {
+	const separator = " "
 
-	for _, binChunk := range chunks {
-
+	switch len(chunks) {
+	case 0:
+		return ""
+	case 1:
+		return string(chunks[0])
 	}
+
+	res := strings.Builder{}
+
+	res.WriteString(string(chunks[0]))
+
+	for _, chunk := range chunks[1:] {
+		res.WriteString(separator)
+		res.WriteString(string(chunk))
+	}
+
+	return res.String()
+}
+
+func (chunks BinaryChunks) toHex() HexChunks {
+	hexChunks := make(HexChunks, 0, len(chunks))
+
+	for _, chunk := range chunks {
+		hexChunk := chunk.toHex()
+		hexChunks = append(hexChunks, hexChunk)
+	}
+
+	return hexChunks
+}
+
+func (chunk BinaryChunk) toHex() HexChunk {
+	val, err := strconv.ParseUint(string(chunk), 2, chunkSize)
+	if err != nil {
+		panic(err)
+	}
+
+	res := strings.ToUpper(fmt.Sprintf("%x", val))
+
+	if len(res) < 2 {
+		res = "0" + res
+	}
+
+	return HexChunk(res)
 }
 
 func splitByChunk(str string, chunkSize int) BinaryChunks {
@@ -63,14 +102,14 @@ func splitByChunk(str string, chunkSize int) BinaryChunks {
 	for i, ch := range str {
 		buf.WriteRune(ch)
 		if (i+1)%chunkSize == 0 {
-			res = append(res, buf.String())
+			res = append(res, BinaryChunk(buf.String()))
 			buf.Reset()
 		}
 	}
 
 	if bufLen := len(buf.String()); bufLen != 0 {
 		buf.WriteString(strings.Repeat("0", chunkSize-bufLen))
-		res = append(res, buf.String())
+		res = append(res, BinaryChunk(buf.String()))
 	}
 
 	return res
