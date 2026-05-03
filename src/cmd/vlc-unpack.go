@@ -4,6 +4,8 @@ import (
 	"archiver/src/lib/vlc"
 	"io"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -13,6 +15,9 @@ var vlcUnpackCmd = &cobra.Command{
 	Short: "Unpack file using variable-length code",
 	Run:   unpack,
 }
+
+// TODO: take original extention
+const unpackedExtension = ".txt"
 
 func unpack(_ *cobra.Command, args []string) {
 	if (len(args) != 1) || (args[0] == "") {
@@ -31,10 +36,22 @@ func unpack(_ *cobra.Command, args []string) {
 		handleError(err)
 	}
 
-	packed := vlc.Encode(string(data))
+	unpacked := vlc.Decode(string(data))
 
-	err = os.WriteFile(packedFileName(filePath), []byte(packed), 0644)
+	err = os.WriteFile(unpackedFileName(filePath), []byte(unpacked), 0644)
 	if err != nil {
 		handleError(err)
 	}
+}
+
+func unpackedFileName(path string) string {
+	fileName := filepath.Base(path)
+	ext := filepath.Ext(fileName)
+	baseName := strings.TrimSuffix(fileName, ext)
+
+	return baseName + unpackedExtension
+}
+
+func init() {
+	unpackCmd.AddCommand(vlcUnpackCmd)
 }

@@ -1,24 +1,11 @@
 package vlc
 
 import (
-	"fmt"
-	"strconv"
 	"strings"
 	"unicode"
-	"unicode/utf8"
 )
 
 type encodingTable map[rune]string
-
-type BinaryChunks []BinaryChunk
-
-type HexChunks []HexChunk
-
-type BinaryChunk string
-
-type HexChunk string
-
-const chunkSize = 8
 
 func Encode(str string) string {
 	// prepare text H -> !h
@@ -27,92 +14,25 @@ func Encode(str string) string {
 	// encode text to binary: some text -> 10011010010110
 	binaryStr := encodeBinary(preparedStr)
 
-	// slise text to 10110011 01011011 10010010 10010110
+	// slice text to 10110011 01011011 10010010 10010110
 	chunks := splitByChunk(binaryStr, chunkSize)
 
-	// modifi to 3A F0 D3
+	// modify to 3A F0 D3
 	hexChunks := chunks.toHex()
 
 	return hexChunks.toStr()
 }
 
-func (chunks HexChunks) toStr() string {
-	const separator = " "
+func Decode(str string) string {
+	binaryString := DecodeStrToHexChunks(str).toBinary().toMonolitStr()
 
-	switch len(chunks) {
-	case 0:
-		return ""
-	case 1:
-		return string(chunks[0])
-	}
+	// actual decoding
+	dt := getEncodingTable().DecodeTree()
+	decodedStr := dt.Decode(binaryString)
 
-	res := strings.Builder{}
+	result := unprepareText(decodedStr)
 
-	res.WriteString(string(chunks[0]))
-
-	for _, chunk := range chunks[1:] {
-		res.WriteString(separator)
-		res.WriteString(string(chunk))
-	}
-
-	return res.String()
-}
-
-func (chunks BinaryChunks) toHex() HexChunks {
-	hexChunks := make(HexChunks, 0, len(chunks))
-
-	for _, chunk := range chunks {
-		hexChunk := chunk.toHex()
-		hexChunks = append(hexChunks, hexChunk)
-	}
-
-	return hexChunks
-}
-
-func (chunk BinaryChunk) toHex() HexChunk {
-	val, err := strconv.ParseUint(string(chunk), 2, chunkSize)
-	if err != nil {
-		panic(err)
-	}
-
-	res := strings.ToUpper(fmt.Sprintf("%x", val))
-
-	if len(res) < 2 {
-		res = "0" + res
-	}
-
-	return HexChunk(res)
-}
-
-func splitByChunk(str string, chunkSize int) BinaryChunks {
-	strLen := utf8.RuneCountInString(str)
-	chunksCount := strLen / chunkSize
-
-	if chunksCount == 0 && len(str) == 0 {
-		return BinaryChunks{}
-	}
-
-	if strLen%chunkSize != 0 {
-		chunksCount++
-	}
-
-	res := make(BinaryChunks, 0, chunksCount)
-	var buf strings.Builder
-
-	for i, ch := range str {
-		buf.WriteRune(ch)
-		if (i+1)%chunkSize == 0 {
-			res = append(res, BinaryChunk(buf.String()))
-			buf.Reset()
-		}
-	}
-
-	if bufLen := len(buf.String()); bufLen != 0 {
-		buf.WriteString(strings.Repeat("0", chunkSize-bufLen))
-		res = append(res, BinaryChunk(buf.String()))
-	}
-
-	return res
+	return result
 }
 
 // Prepares text for encoding: changes upper case letters to:
@@ -125,8 +45,28 @@ func prepareText(str string) string {
 		if unicode.IsUpper(ch) {
 			buf.WriteRune('!')
 			buf.WriteRune(unicode.ToLower(ch))
+		} else if ch == '!' {
+			buf.WriteRune('!')
+			buf.WriteRune('!')
 		} else {
 			buf.WriteRune(ch)
+		}
+	}
+
+	return buf.String()
+}
+
+// Removes escaping from string
+// i.g.: !hello !world!! -> Hello World!
+func unprepareText(str string) string {
+	var buf strings.Builder
+
+	for i := 0; i < len(str); i++ {
+		if str[i] == '!' {
+			i++
+			buf.WriteRune(unicode.ToUpper(rune(str[i])))
+		} else {
+			buf.WriteRune(rune(str[i]))
 		}
 	}
 
