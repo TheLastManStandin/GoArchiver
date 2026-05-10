@@ -3,30 +3,9 @@ package vlc
 import "strings"
 
 type DecodingTree struct {
-	val  rune
-	zero *DecodingTree
-	one  *DecodingTree
-}
-
-func (dt *DecodingTree) Decode(str string) string {
-	res := strings.Builder{}
-	pos := dt
-
-	for _, bite := range str {
-		switch bite {
-		case '1':
-			pos = pos.one
-		case '0':
-			pos = pos.zero
-		}
-
-		if pos.val != 0 {
-			res.WriteRune(pos.val)
-			pos = dt
-		}
-	}
-
-	return res.String()
+	Val  rune
+	Zero *DecodingTree
+	One  *DecodingTree
 }
 
 func (ec encodingTable) DecodeTree() *DecodingTree {
@@ -44,16 +23,37 @@ func (dt *DecodingTree) Add(addCh rune, code string) {
 	for _, ch := range code {
 		switch ch {
 		case '0':
-			if pos.zero == nil {
-				pos.zero = &DecodingTree{}
+			if pos.Zero == nil {
+				pos.Zero = &DecodingTree{}
 			}
-			pos = pos.zero
+			pos = pos.Zero
 		case '1':
-			if pos.one == nil {
-				pos.one = &DecodingTree{}
+			if pos.One == nil {
+				pos.One = &DecodingTree{}
 			}
-			pos = pos.one
+			pos = pos.One
 		}
 	}
-	pos.val = addCh
+	pos.Val = addCh
+}
+
+func (dt *DecodingTree) Decode(str string) string {
+	res := strings.Builder{}
+	pos := dt
+
+	for _, bite := range str {
+		switch bite {
+		case '1':
+			pos = pos.One
+		case '0':
+			pos = pos.Zero
+		}
+
+		if pos.Val != 0 {
+			res.WriteRune(pos.Val)
+			pos = dt
+		}
+	}
+
+	return res.String()
 }

@@ -7,7 +7,7 @@ import (
 
 type encodingTable map[rune]string
 
-func Encode(str string) string {
+func Encode(str string) []byte {
 	// prepare text H -> !h
 	preparedStr := prepareText(str)
 
@@ -17,14 +17,11 @@ func Encode(str string) string {
 	// slice text to 10110011 01011011 10010010 10010110
 	chunks := splitByChunk(binaryStr, chunkSize)
 
-	// modify to 3A F0 D3
-	hexChunks := chunks.toHex()
-
-	return hexChunks.toStr()
+	return chunks.toBytes()
 }
 
-func Decode(str string) string {
-	binaryString := DecodeStrToHexChunks(str).toBinary().toMonolitStr()
+func Decode(encodedData []byte) string {
+	binaryString := DecodeStrToBinChunks(encodedData).toMonolithStr()
 
 	// actual decoding
 	dt := getEncodingTable().DecodeTree()

@@ -66,93 +66,6 @@ func Test_splitByChunk(t *testing.T) {
 	}
 }
 
-func TestBinaryChunks_toHex(t *testing.T) {
-	tests := []struct {
-		name  string
-		chunk BinaryChunks
-		want  HexChunks
-	}{
-		{
-			name:  "case 1",
-			chunk: BinaryChunks{"10011010", "00000010"},
-			want:  HexChunks{"9A", "02"},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.chunk.toHex(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("toHex() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestDecodeStrToHexChunks(t *testing.T) {
-	type args struct {
-		str string
-	}
-	tests := []struct {
-		name string
-		args args
-		want HexChunks
-	}{
-		{
-			name: "default",
-			args: args{
-				str: "20 E9 24 C7 0C",
-			},
-			want: HexChunks{
-				"20",
-				"E9",
-				"24",
-				"C7",
-				"0C",
-			},
-		},
-		{
-			name: "default2",
-			args: args{
-				str: "  20 E9 24   C7 0C ",
-			},
-			want: HexChunks{
-				"20",
-				"E9",
-				"24",
-				"C7",
-				"0C",
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := DecodeStrToHexChunks(tt.args.str); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("DecodeStrToHexChunks() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestHexChunks_toBinary(t *testing.T) {
-	tests := []struct {
-		name   string
-		chunks HexChunks
-		want   BinaryChunks
-	}{
-		{
-			name:   "default",
-			chunks: HexChunks{"9A", "02"},
-			want:   BinaryChunks{"10011010", "00000010"},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.chunks.toBinary(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("toBinary() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestBinaryChunks_toMonolitStr(t *testing.T) {
 	tests := []struct {
 		name   string
@@ -167,8 +80,42 @@ func TestBinaryChunks_toMonolitStr(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.chunks.toMonolitStr(); got != tt.want {
-				t.Errorf("toMonolitStr() = %v, want %v", got, tt.want)
+			if got := tt.chunks.toMonolithStr(); got != tt.want {
+				t.Errorf("toMonolithStr() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDecodeStrToBinChunks(t *testing.T) {
+	type args struct {
+		data []byte
+	}
+	tests := []struct {
+		name string
+		args args
+		want BinaryChunks
+	}{
+		{
+			name: "default",
+			args: args{
+				data: []byte{
+					32, 48, 21, 5, 62,
+				},
+			},
+			want: BinaryChunks{
+				"00100000",
+				"00110000",
+				"00010101",
+				"00000101",
+				"00111110",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := DecodeStrToBinChunks(tt.args.data); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("DecodeStrToBinChunks() = %v, want %v", got, tt.want)
 			}
 		})
 	}

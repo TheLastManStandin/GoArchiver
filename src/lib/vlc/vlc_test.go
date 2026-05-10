@@ -1,6 +1,7 @@
 package vlc
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -90,26 +91,53 @@ func TestEncode(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want string
+		want []byte
 	}{
 		{
 			name: "default",
 			args: args{
 				str: "My name is Ted",
 			},
-			want: "20 30 3C 18 77 4A E4 4D 28",
+			want: []byte{
+				0x20,
+				0x30,
+				0x3C,
+				0x18,
+				0x77,
+				0x4A,
+				0xE4,
+				0x4D,
+				0x28,
+			},
 		},
 		{
 			name: "with exclamations",
 			args: args{
 				str: "Hello my Friends!!!",
 			},
-			want: "20 E9 24 C7 0C 0E 40 88 4D 81 54 82 08 20 82 00",
+			want: []byte{
+				0x20,
+				0xE9,
+				0x24,
+				0xC7,
+				0x0C,
+				0x0E,
+				0x40,
+				0x88,
+				0x4D,
+				0x81,
+				0x54,
+				0x82,
+				0x08,
+				0x20,
+				0x82,
+				0x00,
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Encode(tt.args.str); got != tt.want {
+			if got := Encode(tt.args.str); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Encode() = %v, want %v", got, tt.want)
 			}
 		})
@@ -144,7 +172,7 @@ func Test_unprepareText(t *testing.T) {
 
 func TestDecode(t *testing.T) {
 	type args struct {
-		str string
+		encodedText []byte
 	}
 	tests := []struct {
 		name string
@@ -154,14 +182,31 @@ func TestDecode(t *testing.T) {
 		{
 			name: "default",
 			args: args{
-				str: "20 E9 24 C7 0C 0E 40 88 4D 81 54 82 08 20 82 00",
+				encodedText: []byte{
+					0x20,
+					0xE9,
+					0x24,
+					0xC7,
+					0x0C,
+					0x0E,
+					0x40,
+					0x88,
+					0x4D,
+					0x81,
+					0x54,
+					0x82,
+					0x08,
+					0x20,
+					0x82,
+					0x00,
+				},
 			},
 			want: "Hello my Friends!!!",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Decode(tt.args.str); got != tt.want {
+			if got := Decode(tt.args.encodedText); got != tt.want {
 				t.Errorf("Decode() = %v, want %v", got, tt.want)
 			}
 		})
