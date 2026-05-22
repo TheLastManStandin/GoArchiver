@@ -1,12 +1,70 @@
 package cmd
 
-import "github.com/spf13/cobra"
+import (
+	"archiver/src/lib/compression"
+	"archiver/src/lib/compression/vlc"
+	"io"
+	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/spf13/cobra"
+)
 
 var unpackCmd = &cobra.Command{
 	Use:   "unpack",
 	Short: "Unpack file",
+	Run:   unpack,
+}
+
+// TODO: take original extention
+const unpackedExtension = ".txt"
+
+func unpack(cmd *cobra.Command, args []string) {
+	var decoder compression.Decoder
+	if (len(args) != 1) || (args[0] == "") {
+		handleError(ErrEmptyPath)
+	}
+	filePath := args[0]
+
+	method := cmd.Flag("method").Value.String()
+
+	switch method {
+	case "vlc":
+		decoder = vlc.New()
+	default:
+		cmd.PrintErr("Unsupported method: " + method)
+	}
+
+	r, err := os.Open(filePath)
+	if err != nil {
+		handleError(err)
+	}
+	defer r.Close()
+
+	data, err := io.ReadAll(r)
+	if err != nil {
+		handleError(err)
+	}
+
+	unpacked := decoder.Decode(data)
+
+	err = os.WriteFile(unpackedFileName(filePath), []byte(unpacked), 0644)
+	if err != nil {
+		handleError(err)
+	}
+}
+
+func unpackedFileName(path string) string {
+	fileName := filepath.Base(path)
+	ext := filepath.Ext(fileName)
+	baseName := strings.TrimSuffix(fileName, ext)
+
+	return baseName + unpackedExtension
 }
 
 func init() {
 	rootCmd.AddCommand(unpackCmd)
+
+	unpackCmd.Flags().StringP("method", "m", "", "unpacking method")
 }

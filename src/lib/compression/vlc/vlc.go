@@ -5,9 +5,16 @@ import (
 	"unicode"
 )
 
+type EncoderDecoder struct {
+}
+
+func New() EncoderDecoder {
+	return EncoderDecoder{}
+}
+
 type encodingTable map[rune]string
 
-func Encode(str string) []byte {
+func (_ EncoderDecoder) Encode(str string) []byte {
 	// prepare text H -> !h
 	preparedStr := prepareText(str)
 
@@ -20,7 +27,7 @@ func Encode(str string) []byte {
 	return chunks.toBytes()
 }
 
-func Decode(encodedData []byte) string {
+func (_ EncoderDecoder) Decode(encodedData []byte) string {
 	binaryString := DecodeStrToBinChunks(encodedData).toMonolithStr()
 
 	// actual decoding
