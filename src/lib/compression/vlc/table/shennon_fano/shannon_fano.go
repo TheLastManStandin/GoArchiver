@@ -62,23 +62,25 @@ func assignCodes(codes []code) {
 func bestDividerPosition(codes []code) int {
 	minDiff := math.MaxInt
 	totalSum := 0
+	bestPos := 0
 
 	for _, c := range codes {
 		totalSum += c.Quantity
 	}
 
-	leftSum := codes[0].Quantity
+	leftSum := 0
 	for i, c := range codes {
+		leftSum += c.Quantity
 		rightSum := totalSum - leftSum
 
 		if int(math.Abs(float64(rightSum-leftSum))) < minDiff {
 			minDiff = int(math.Abs(float64(rightSum - leftSum)))
 		} else {
-			return i - 1
+			bestPos = i
+			break
 		}
-		leftSum += c.Quantity
 	}
-	return len(codes) - 1
+	return bestPos
 }
 
 func newCharStat(text string) charStat {

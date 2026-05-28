@@ -29,7 +29,7 @@ func Test_bestDividerPosition(t *testing.T) {
 					},
 				},
 			},
-			want: 0,
+			want: 1,
 		},
 		{
 			name: "case 2 one element",
@@ -51,6 +51,86 @@ func Test_bestDividerPosition(t *testing.T) {
 					},
 					code{
 						Quantity: 3,
+					},
+				},
+			},
+			want: 1,
+		},
+		{
+			name: "case 4 three element",
+			args: args{
+				codes: []code{
+					code{
+						Quantity: 2,
+					},
+					code{
+						Quantity: 1,
+					},
+					code{
+						Quantity: 1,
+					},
+				},
+			},
+			want: 1,
+		},
+		{
+			name: "case 5",
+			args: args{
+				codes: []code{
+					code{
+						Quantity: 2,
+					},
+					code{
+						Quantity: 2,
+					},
+					code{
+						Quantity: 1,
+					},
+					code{
+						Quantity: 1,
+					},
+					code{
+						Quantity: 1,
+					},
+					code{
+						Quantity: 1,
+					},
+				},
+			},
+			want: 2,
+		},
+		{
+			name: "case 5 (need rightmost)",
+			args: args{
+				codes: []code{
+					code{
+						Quantity: 1,
+					},
+					code{
+						Quantity: 1,
+					},
+					code{
+						Quantity: 1,
+					},
+				},
+			},
+			want: 1,
+		},
+		{
+			name: "case 6",
+			args: args{
+				codes: []code{
+					code{
+						Quantity: 2,
+					},
+					code{
+						Quantity: 2,
+					},
+					code{
+						Quantity: 1,
+					},
+					code{
+						Quantity: 1,
 					},
 				},
 			},
