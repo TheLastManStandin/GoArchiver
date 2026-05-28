@@ -1,35 +1,41 @@
-package vlc
+package table
 
 import "strings"
 
-type DecodingTree struct {
-	Val  rune
-	Zero *DecodingTree
-	One  *DecodingTree
+type Generator interface {
+	NewTable(text string) EncodingTable
 }
 
-func (ec encodingTable) DecodeTree() *DecodingTree {
-	res := DecodingTree{}
+type decodingTree struct {
+	Val  rune
+	Zero *decodingTree
+	One  *decodingTree
+}
+
+type EncodingTable map[rune]string
+
+func (ec EncodingTable) decodingTree() *decodingTree {
+	res := decodingTree{}
 
 	for ch, code := range ec {
-		res.Add(ch, code)
+		res.add(ch, code)
 	}
 
 	return &res
 }
 
-func (dt *DecodingTree) Add(addCh rune, code string) {
+func (dt *decodingTree) add(addCh rune, code string) {
 	pos := dt
 	for _, ch := range code {
 		switch ch {
 		case '0':
 			if pos.Zero == nil {
-				pos.Zero = &DecodingTree{}
+				pos.Zero = &decodingTree{}
 			}
 			pos = pos.Zero
 		case '1':
 			if pos.One == nil {
-				pos.One = &DecodingTree{}
+				pos.One = &decodingTree{}
 			}
 			pos = pos.One
 		}
@@ -37,7 +43,7 @@ func (dt *DecodingTree) Add(addCh rune, code string) {
 	pos.Val = addCh
 }
 
-func (dt *DecodingTree) Decode(str string) string {
+func (dt *decodingTree) Decode(str string) string {
 	res := strings.Builder{}
 	pos := dt
 

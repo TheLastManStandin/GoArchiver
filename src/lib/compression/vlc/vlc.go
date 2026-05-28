@@ -12,8 +12,6 @@ func New() EncoderDecoder {
 	return EncoderDecoder{}
 }
 
-type encodingTable map[rune]string
-
 func (_ EncoderDecoder) Encode(str string) []byte {
 	// prepare text H -> !h
 	preparedStr := prepareText(str)
@@ -31,7 +29,7 @@ func (_ EncoderDecoder) Decode(encodedData []byte) string {
 	binaryString := DecodeStrToBinChunks(encodedData).toMonolithStr()
 
 	// actual decoding
-	dt := getEncodingTable().DecodeTree()
+	dt := getEncodingTable().DecodingTree()
 	decodedStr := dt.Decode(binaryString)
 
 	result := unprepareText(decodedStr)
