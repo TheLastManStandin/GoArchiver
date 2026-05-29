@@ -2,8 +2,10 @@ package shennon_fano
 
 import (
 	"archiver/src/lib/compression/vlc/table"
+	"fmt"
 	"math"
 	"sort"
+	"strings"
 )
 
 type Generator struct {
@@ -28,7 +30,23 @@ func (g Generator) NewTable(text string) table.EncodingTable {
 	stat := newCharStat(text)
 
 	codeTable := build(stat)
-	return nil
+	return codeTable.Export()
+}
+
+func (et encodingTable) Export() table.EncodingTable {
+	res := make(table.EncodingTable)
+
+	for i, v := range et {
+		byteString := fmt.Sprintf("%b", v.Bits)
+
+		if lenDiff := v.Size - len(byteString); lenDiff > 0 {
+			byteString = strings.Repeat("0", lenDiff) + byteString
+		}
+
+		res[i] = byteString
+	}
+
+	return res
 }
 
 func build(stat charStat) encodingTable {
