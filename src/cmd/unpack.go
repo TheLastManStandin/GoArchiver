@@ -63,11 +63,13 @@ func unpackedFileName(path string) string {
 	ext := filepath.Ext(fileName)
 	baseName := strings.TrimSuffix(fileName, ext)
 
-	return baseName + unpackedDefExtension
+	return baseName
+	//+ unpackedDefExtension
 }
 
 func init() {
 	rootCmd.AddCommand(unpackCmd)
 
-	unpackCmd.Flags().StringP("method", "m", "", "unpacking method")
+	// also change pack
+	unpackCmd.Flags().StringP("method", "m", "", "compression methods: \n\tvlc\n\tshennon_fano")
 }

@@ -8,7 +8,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -63,8 +62,9 @@ func pack(cmd *cobra.Command, args []string) {
 
 func packedFileName(path string) string {
 	fileName := filepath.Base(path)
-	ext := filepath.Ext(fileName)
-	baseName := strings.TrimSuffix(fileName, ext)
+	//ext := filepath.Ext(fileName)
+	//baseName := strings.TrimSuffix(fileName, ext)
+	baseName := fileName
 
 	return baseName + packedExtension
 }
@@ -72,7 +72,8 @@ func packedFileName(path string) string {
 func init() {
 	rootCmd.AddCommand(packCmd)
 
-	packCmd.Flags().StringP("method", "m", "", "compression method vlc")
+	// also change unpack
+	packCmd.Flags().StringP("method", "m", "", "compression methods: \n\tvlc\n\tshennon_fano")
 
 	if err := packCmd.MarkFlagRequired("method"); err != nil {
 		panic(err)
