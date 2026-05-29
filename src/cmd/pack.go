@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"archiver/src/lib/compression"
+	"archiver/src/lib/compression/shennon_fano"
 	"archiver/src/lib/compression/vlc"
 	"errors"
 	"io"
@@ -35,6 +36,8 @@ func pack(cmd *cobra.Command, args []string) {
 	switch method {
 	case "vlc":
 		encoder = vlc.New()
+	case "shennon_fano":
+		encoder = shennon_fano.New()
 	default:
 		cmd.PrintErr("Unsupported method: " + method)
 	}

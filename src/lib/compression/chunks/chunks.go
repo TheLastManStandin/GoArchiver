@@ -1,4 +1,4 @@
-package vlc
+package chunks
 
 import (
 	"fmt"
@@ -11,9 +11,9 @@ type BinaryChunks []BinaryChunk
 
 type BinaryChunk string
 
-const chunkSize = 8
+const ChunkSize = 8
 
-func (chunks BinaryChunks) toMonolithStr() string {
+func (chunks BinaryChunks) ToMonolithStr() string {
 	var monolithStr strings.Builder
 
 	for _, chunk := range chunks {
@@ -37,7 +37,7 @@ func NewBinChunk(code byte) BinaryChunk {
 	return BinaryChunk(fmt.Sprintf("%08b", code))
 }
 
-func (chunks BinaryChunks) toBytes() []byte {
+func (chunks BinaryChunks) ToBytes() []byte {
 	res := make([]byte, 0, len(chunks))
 
 	for _, chunk := range chunks {
@@ -48,7 +48,7 @@ func (chunks BinaryChunks) toBytes() []byte {
 }
 
 func (chunk BinaryChunk) toByte() byte {
-	num, err := strconv.ParseUint(string(chunk), 2, chunkSize)
+	num, err := strconv.ParseUint(string(chunk), 2, ChunkSize)
 
 	if err != nil {
 		panic("cant parse bin chunk" + err.Error())
@@ -57,7 +57,7 @@ func (chunk BinaryChunk) toByte() byte {
 	return byte(num)
 }
 
-func splitByChunk(str string, chunkSize int) BinaryChunks {
+func SplitByChunk(str string, chunkSize int) BinaryChunks {
 	strLen := utf8.RuneCountInString(str)
 	chunksCount := strLen / chunkSize
 

@@ -6,16 +6,16 @@ type Generator interface {
 	NewTable(text string) EncodingTable
 }
 
-type decodingTree struct {
+type DecodingTree struct {
 	Val  rune
-	Zero *decodingTree
-	One  *decodingTree
+	Zero *DecodingTree
+	One  *DecodingTree
 }
 
 type EncodingTable map[rune]string
 
-func (ec EncodingTable) decodingTree() *decodingTree {
-	res := decodingTree{}
+func (ec EncodingTable) DecodingTree() *DecodingTree {
+	res := DecodingTree{}
 
 	for ch, code := range ec {
 		res.add(ch, code)
@@ -24,18 +24,18 @@ func (ec EncodingTable) decodingTree() *decodingTree {
 	return &res
 }
 
-func (dt *decodingTree) add(addCh rune, code string) {
+func (dt *DecodingTree) add(addCh rune, code string) {
 	pos := dt
 	for _, ch := range code {
 		switch ch {
 		case '0':
 			if pos.Zero == nil {
-				pos.Zero = &decodingTree{}
+				pos.Zero = &DecodingTree{}
 			}
 			pos = pos.Zero
 		case '1':
 			if pos.One == nil {
-				pos.One = &decodingTree{}
+				pos.One = &DecodingTree{}
 			}
 			pos = pos.One
 		}
@@ -43,7 +43,7 @@ func (dt *decodingTree) add(addCh rune, code string) {
 	pos.Val = addCh
 }
 
-func (dt *decodingTree) Decode(str string) string {
+func (dt *DecodingTree) Decode(str string) string {
 	res := strings.Builder{}
 	pos := dt
 

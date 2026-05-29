@@ -1,7 +1,7 @@
 package shennon_fano
 
 import (
-	"archiver/src/lib/compression/vlc/table"
+	"archiver/src/lib/compression/table"
 	"fmt"
 	"math"
 	"sort"

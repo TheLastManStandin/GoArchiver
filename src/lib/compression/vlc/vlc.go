@@ -1,6 +1,9 @@
 package vlc
 
 import (
+	"archiver/src/lib/compression"
+	"archiver/src/lib/compression/chunks"
+	"archiver/src/lib/compression/table/vlc"
 	"strings"
 	"unicode"
 )
@@ -17,19 +20,19 @@ func (_ EncoderDecoder) Encode(str string) []byte {
 	preparedStr := prepareText(str)
 
 	// encode text to binary: some text -> 10011010010110
-	binaryStr := encodeBinary(preparedStr)
+	binaryStr := compression.EncodeBinary(preparedStr, vlc.GetEncodingTable())
 
 	// slice text to 10110011 01011011 10010010 10010110
-	chunks := splitByChunk(binaryStr, chunkSize)
+	binChunks := chunks.SplitByChunk(binaryStr, chunks.ChunkSize)
 
-	return chunks.toBytes()
+	return binChunks.ToBytes()
 }
 
 func (_ EncoderDecoder) Decode(encodedData []byte) string {
-	binaryString := DecodeStrToBinChunks(encodedData).toMonolithStr()
+	binaryString := chunks.DecodeStrToBinChunks(encodedData).ToMonolithStr()
 
 	// actual decoding
-	dt := getEncodingTable().DecodingTree()
+	dt := vlc.GetEncodingTable().DecodingTree()
 	decodedStr := dt.Decode(binaryString)
 
 	result := unprepareText(decodedStr)
@@ -73,59 +76,4 @@ func unprepareText(str string) string {
 	}
 
 	return buf.String()
-}
-
-// encodeBinary encodes string to binary codes string
-// without spaces.
-// i.g.: !hello !wo!rld -> 1101011101010001...
-func encodeBinary(str string) string {
-	var buf strings.Builder
-	tbl := getEncodingTable()
-
-	for _, ch := range str {
-		buf.WriteString(bin(ch, tbl))
-	}
-
-	return buf.String()
-}
-
-func bin(c rune, tbl encodingTable) string {
-	res, ok := tbl[c]
-	if !ok {
-		panic("unknown character: " + string(c))
-	}
-	return res
-}
-
-func getEncodingTable() encodingTable {
-	return encodingTable{
-		' ': "11",
-		't': "1001",
-		'n': "10000",
-		's': "0101",
-		'r': "01000",
-		'd': "00101",
-		'!': "001000",
-		'c': "000101",
-		'm': "000011",
-		'g': "0000100",
-		'b': "0000010",
-		'v': "00000001",
-		'k': "0000000001",
-		'q': "000000000001",
-		'e': "101",
-		'o': "10001",
-		'a': "011",
-		'i': "01001",
-		'h': "0011",
-		'l': "001001",
-		'u': "00011",
-		'f': "000100",
-		'p': "0000101",
-		'w': "0000011",
-		'y': "0000001",
-		'j': "000000001",
-		'x': "00000000001",
-		'z': "000000000000",
-	}
 }

@@ -1,4 +1,4 @@
-package vlc
+package chunks
 
 import (
 	"reflect"
@@ -80,8 +80,8 @@ func TestBinaryChunks_toMonolitStr(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.chunks.toMonolithStr(); got != tt.want {
-				t.Errorf("toMonolithStr() = %v, want %v", got, tt.want)
+			if got := tt.chunks.ToMonolithStr(); got != tt.want {
+				t.Errorf("ToMonolithStr() = %v, want %v", got, tt.want)
 			}
 		})
 	}
