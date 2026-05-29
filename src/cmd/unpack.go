@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"archiver/src/lib/compression"
-	"archiver/src/lib/compression/shennon_fano"
-	"archiver/src/lib/compression/vlc"
+	"archiver/src/lib/compression/algorithms/shennon_fano"
+	"archiver/src/lib/compression/algorithms/vlc"
 	"io"
 	"os"
 	"path/filepath"
@@ -19,7 +19,7 @@ var unpackCmd = &cobra.Command{
 }
 
 // TODO: take original extention
-const unpackedExtension = ".txt"
+const unpackedDefExtension = ".txt"
 
 func unpack(cmd *cobra.Command, args []string) {
 	var decoder compression.Decoder
@@ -63,7 +63,7 @@ func unpackedFileName(path string) string {
 	ext := filepath.Ext(fileName)
 	baseName := strings.TrimSuffix(fileName, ext)
 
-	return baseName + unpackedExtension
+	return baseName + unpackedDefExtension
 }
 
 func init() {

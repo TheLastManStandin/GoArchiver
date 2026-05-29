@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"archiver/src/lib/compression"
-	"archiver/src/lib/compression/shennon_fano"
-	"archiver/src/lib/compression/vlc"
+	"archiver/src/lib/compression/algorithms/shennon_fano"
+	"archiver/src/lib/compression/algorithms/vlc"
 	"errors"
 	"io"
 	"os"
