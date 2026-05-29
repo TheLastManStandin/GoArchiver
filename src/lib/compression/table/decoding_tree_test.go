@@ -1,4 +1,4 @@
-package vlc
+package table
 
 import (
 	"testing"

@@ -59,7 +59,7 @@ func Test_splitByChunk(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := splitByChunk(tt.args.str, tt.args.chunkSize); !reflect.DeepEqual(got, tt.want) {
+			if got := SplitByChunk(tt.args.str, tt.args.chunkSize); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("splitByChunk() = %v, want %v", got, tt.want)
 			}
 		})

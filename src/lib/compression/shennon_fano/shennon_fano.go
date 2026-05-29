@@ -24,11 +24,23 @@ func (_ EncoderDecoder) Encode(str string) []byte {
 }
 
 func (_ EncoderDecoder) Decode(encodedData []byte) string {
-	parseEncodedData(encodedData)
+	tbl, data := parseEncodedData(encodedData)
+
+	binaryString := chunks.DecodeStrToBinChunks(data).ToMonolithStr()
+	decodedStr := tbl.DecodingTree().Decode(binaryString)
+
+	return decodedStr
 }
 
-func parseEncodedData(data []byte) {
-	
+func parseEncodedData(data []byte) (table.EncodingTable, []byte) {
+	encodedTableLen := binary.BigEndian.Uint32(data[:4])
+	//textLen := binary.BigEndian.Uint32(data[4:8])
+	binaryTable := data[8 : 8+encodedTableLen]
+	binaryText := data[8+encodedTableLen:]
+
+	tbl := decodeTable(binaryTable)
+
+	return tbl, binaryText
 }
 
 func buildEncodedFile(str string, fileTable table.EncodingTable) []byte {
@@ -62,4 +74,16 @@ func encodeTable(fileTable table.EncodingTable) []byte {
 	}
 
 	return tableBuf.Bytes()
+}
+
+func decodeTable(data []byte) table.EncodingTable {
+	var tbl table.EncodingTable
+
+	r := bytes.NewReader(data)
+
+	if err := gob.NewDecoder(r).Decode(&tbl); err != nil {
+		panic(err)
+	}
+
+	return tbl
 }

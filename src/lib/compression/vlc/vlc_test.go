@@ -1,6 +1,8 @@
 package vlc
 
 import (
+	"archiver/src/lib/compression"
+	"archiver/src/lib/compression/table/vlc"
 	"reflect"
 	"testing"
 )
@@ -77,7 +79,7 @@ func TestEncodeBinary(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := encodeBinary(tt.args.str); got != tt.want {
+			if got := compression.EncodeBinary(tt.args.str, vlc.GetEncodingTable()); got != tt.want {
 				t.Errorf("Encode() = %v, want %v", got, tt.want)
 			}
 		})
