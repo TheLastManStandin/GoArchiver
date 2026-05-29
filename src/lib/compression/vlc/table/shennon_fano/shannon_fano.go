@@ -16,7 +16,7 @@ type encodingTable map[rune]code
 type code struct {
 	Char     rune
 	Quantity int
-	Bit      uint32
+	Bits     uint32
 	Size     int
 }
 
@@ -25,8 +25,9 @@ func NewGenerator() Generator {
 }
 
 func (g Generator) NewTable(text string) table.EncodingTable {
-	//stat := newCharStat(text)
+	stat := newCharStat(text)
 
+	codeTable := build(stat)
 	return nil
 }
 
@@ -42,14 +43,20 @@ func build(stat charStat) encodingTable {
 
 	sort.Slice(codes, func(i, j int) bool {
 		if codes[i].Quantity == codes[j].Quantity {
-			return codes[i].Char > codes[j].Char
+			return codes[i].Char < codes[j].Char
 		}
-		return codes[i].Quantity < codes[j].Quantity
+		return codes[i].Quantity > codes[j].Quantity
 	})
 
 	assignCodes(codes)
 
-	return nil
+	res := encodingTable{}
+
+	for _, v := range codes {
+		res[v.Char] = v
+	}
+
+	return res
 }
 
 func assignCodes(codes []code) {
@@ -57,6 +64,18 @@ func assignCodes(codes []code) {
 		return
 	}
 
+	divider := bestDividerPosition(codes)
+
+	for i := 0; i < len(codes); i++ {
+		codes[i].Bits <<= 1
+		codes[i].Size++
+		if i >= divider {
+			codes[i].Bits |= 1
+		}
+	}
+
+	assignCodes(codes[:divider])
+	assignCodes(codes[divider:])
 }
 
 func bestDividerPosition(codes []code) int {
