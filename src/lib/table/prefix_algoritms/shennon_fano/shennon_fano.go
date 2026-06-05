@@ -3,22 +3,11 @@ package shennon_fano
 import (
 	"archiver/src/lib/table"
 	"archiver/src/lib/table/prefix_algoritms"
-	"fmt"
 	"math"
 	"sort"
-	"strings"
 )
 
 type Generator struct {
-}
-
-type encodingTable map[rune]code
-
-type code struct {
-	Char     rune
-	Quantity int
-	Bits     uint32
-	Size     int
 }
 
 func NewGenerator() Generator {
@@ -32,27 +21,11 @@ func (g Generator) NewTable(text string) table.EncodingTable {
 	return codeTable.Export()
 }
 
-func (et encodingTable) Export() table.EncodingTable {
-	res := make(table.EncodingTable)
-
-	for i, v := range et {
-		byteString := fmt.Sprintf("%b", v.Bits)
-
-		if lenDiff := v.Size - len(byteString); lenDiff > 0 {
-			byteString = strings.Repeat("0", lenDiff) + byteString
-		}
-
-		res[i] = byteString
-	}
-
-	return res
-}
-
-func build(stat prefix_algoritms.CharStat) encodingTable {
-	codes := make([]code, 0, len(stat))
+func build(stat prefix_algoritms.CharStat) prefix_algoritms.EncodingTable {
+	codes := make([]prefix_algoritms.Code, 0, len(stat))
 
 	for ch, qty := range stat {
-		codes = append(codes, code{
+		codes = append(codes, prefix_algoritms.Code{
 			Char:     ch,
 			Quantity: qty,
 		})
@@ -67,7 +40,7 @@ func build(stat prefix_algoritms.CharStat) encodingTable {
 
 	assignCodes(codes)
 
-	res := encodingTable{}
+	res := prefix_algoritms.EncodingTable{}
 
 	for _, v := range codes {
 		res[v.Char] = v
@@ -76,7 +49,7 @@ func build(stat prefix_algoritms.CharStat) encodingTable {
 	return res
 }
 
-func assignCodes(codes []code) {
+func assignCodes(codes []prefix_algoritms.Code) {
 	if len(codes) < 2 {
 		return
 	}
@@ -95,7 +68,7 @@ func assignCodes(codes []code) {
 	assignCodes(codes[divider:])
 }
 
-func bestDividerPosition(codes []code) int {
+func bestDividerPosition(codes []prefix_algoritms.Code) int {
 	minDiff := math.MaxInt
 	totalSum := 0
 	bestPos := 0

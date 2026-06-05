@@ -4,35 +4,12 @@ import (
 	"archiver/src/lib/chunks"
 	"archiver/src/lib/compression"
 	"archiver/src/lib/table"
-	"archiver/src/lib/table/prefix_algoritms/shennon_fano"
 	"bytes"
 	"encoding/binary"
 	"encoding/gob"
 )
 
-type EncoderDecoder struct {
-}
-
-func New() EncoderDecoder {
-	return EncoderDecoder{}
-}
-
-func (_ EncoderDecoder) Encode(str string) []byte {
-	fileTable := shennon_fano.NewGenerator().NewTable(str)
-
-	return buildEncodedFile(str, fileTable)
-}
-
-func (_ EncoderDecoder) Decode(encodedData []byte) string {
-	tbl, data := parseEncodedData(encodedData)
-
-	binaryString := chunks.DecodeStrToBinChunks(data).ToMonolithStr()
-	decodedStr := tbl.DecodingTree().Decode(binaryString)
-
-	return decodedStr
-}
-
-func parseEncodedData(data []byte) (table.EncodingTable, []byte) {
+func ParseEncodedData(data []byte) (table.EncodingTable, []byte) {
 	encodedTableLen := binary.BigEndian.Uint32(data[:4])
 	//textLen := binary.BigEndian.Uint32(data[4:8])
 	binaryTable := data[8 : 8+encodedTableLen]
@@ -43,7 +20,7 @@ func parseEncodedData(data []byte) (table.EncodingTable, []byte) {
 	return tbl, binaryText
 }
 
-func buildEncodedFile(str string, fileTable table.EncodingTable) []byte {
+func BuildEncodedFile(str string, fileTable table.EncodingTable) []byte {
 	var buf bytes.Buffer
 
 	encodedTable := encodeTable(fileTable)

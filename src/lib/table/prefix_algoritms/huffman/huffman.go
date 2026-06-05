@@ -9,42 +9,29 @@ import (
 type Generator struct {
 }
 
-type encodingTable map[rune]code
-
-type code struct {
-	Char     rune
-	Quantity int
-	Bits     uint32
-	Size     int
+func NewGenerator() Generator {
+	return Generator{}
 }
 
 type binTree struct {
 	one      *binTree
 	zero     *binTree
 	priority int
-	val      code
+	val      prefix_algoritms.Code
 }
 
 func (g Generator) NewTable(text string) table.EncodingTable {
 	stat := prefix_algoritms.NewCharStat(text)
 
 	codeTable := build(stat)
-	_ = codeTable
-	//return codeTable.Export()
-	return nil
+	return codeTable.Export()
 }
 
-//func (et encodingTable) Export() table.EncodingTable {
-//	res := make(table.EncodingTable)
-//
-//	return res
-//}
-
-func build(stat prefix_algoritms.CharStat) encodingTable {
-	codes := make([]code, 0, len(stat))
+func build(stat prefix_algoritms.CharStat) prefix_algoritms.EncodingTable {
+	codes := make([]prefix_algoritms.Code, 0, len(stat))
 
 	for ch, qty := range stat {
-		codes = append(codes, code{
+		codes = append(codes, prefix_algoritms.Code{
 			Char:     ch,
 			Quantity: qty,
 		})
@@ -58,14 +45,14 @@ func build(stat prefix_algoritms.CharStat) encodingTable {
 	})
 
 	huffmanBinTree := getHuffmanBinTree(codes)
-	res := encodingTable{}
+	res := prefix_algoritms.EncodingTable{}
 	assignCodes(&res, *huffmanBinTree.zero, 0, 1)
 	assignCodes(&res, *huffmanBinTree.one, 1, 1)
 
 	return res
 }
 
-func assignCodes(resTable *encodingTable, binTree binTree, code uint32, size int) {
+func assignCodes(resTable *prefix_algoritms.EncodingTable, binTree binTree, code uint32, size int) {
 	if binTree.val.Char != 0 {
 		binTree.val.Size = size
 		binTree.val.Bits = code
@@ -76,7 +63,7 @@ func assignCodes(resTable *encodingTable, binTree binTree, code uint32, size int
 	}
 }
 
-func getHuffmanBinTree(codes []code) binTree {
+func getHuffmanBinTree(codes []prefix_algoritms.Code) binTree {
 	//sort.Slice(codes, func(i, j int) bool {
 	//	if codes[i].Quantity == codes[j].Quantity {
 	//		return codes[i].Char < codes[j].Char

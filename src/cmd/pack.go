@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"archiver/src/lib/compression"
-	"archiver/src/lib/compression/algorithms"
+	"archiver/src/lib/compression/algorithms/huffman"
+	"archiver/src/lib/compression/algorithms/shennon_fano"
+
 	//"archiver/src/lib/compression/algorithms/vlc"
 	"errors"
 	"io"
@@ -36,7 +38,9 @@ func pack(cmd *cobra.Command, args []string) {
 	//case "vlc":
 	//	encoder = vlc.New()
 	case "shennon_fano":
-		encoder = algorithms.New()
+		encoder = shennon_fano.New()
+	case "huffman":
+		encoder = huffman.New()
 	default:
 		cmd.PrintErr("Unsupported method: " + method)
 	}
@@ -65,6 +69,7 @@ func packedFileName(path string) string {
 	fileName := filepath.Base(path)
 	//ext := filepath.Ext(fileName)
 	//baseName := strings.TrimSuffix(fileName, ext)
+	// TODO: add 1,2... if file exists
 	baseName := fileName
 
 	return baseName + packedExtension

@@ -159,7 +159,7 @@ func Test_build(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want encodingTable
+		want prefix_algoritms.EncodingTable
 	}{
 		{
 			name: "case1",
@@ -174,44 +174,44 @@ func Test_build(t *testing.T) {
 					'e': 4,
 				},
 			},
-			want: encodingTable{
-				'b': code{
+			want: prefix_algoritms.EncodingTable{
+				'b': prefix_algoritms.Code{
 					Char:     'b',
 					Quantity: 3,
 					Bits:     0,
 					Size:     2,
 				},
-				'o': code{
+				'o': prefix_algoritms.Code{
 					Char:     'o',
 					Quantity: 2,
 					Bits:     2,
 					Size:     3,
 				},
-				'e': code{
+				'e': prefix_algoritms.Code{
 					Char:     'e',
 					Quantity: 4,
 					Bits:     3,
 					Size:     2,
 				},
-				'p': code{
+				'p': prefix_algoritms.Code{
 					Char:     'p',
 					Quantity: 2,
 					Bits:     5,
 					Size:     3,
 				},
-				' ': code{
+				' ': prefix_algoritms.Code{
 					Char:     ' ',
 					Quantity: 2,
 					Bits:     3,
 					Size:     3,
 				},
-				'r': code{
+				'r': prefix_algoritms.Code{
 					Char:     'r',
 					Quantity: 1,
 					Bits:     8,
 					Size:     4,
 				},
-				'!': code{
+				'!': prefix_algoritms.Code{
 					Char:     '!',
 					Quantity: 1,
 					Bits:     9,
@@ -231,7 +231,7 @@ func Test_build(t *testing.T) {
 
 //func Test_getHuffmanBinTree(t *testing.T) {
 //	type args struct {
-//		codes []code
+//		codes []Code
 //	}
 //	tests := []struct {
 //		name string
@@ -241,32 +241,32 @@ func Test_build(t *testing.T) {
 //		{
 //			name: "case1",
 //			args: args{
-//				codes: []code{
-//					code{
+//				codes: []Code{
+//					Code{
 //						Char:     'r',
 //						Quantity: 1,
 //					},
-//					code{
+//					Code{
 //						Char:     '!',
 //						Quantity: 1,
 //					},
-//					code{
+//					Code{
 //						Char:     'p',
 //						Quantity: 2,
 //					},
-//					code{
+//					Code{
 //						Char:     'o',
 //						Quantity: 2,
 //					},
-//					code{
+//					Code{
 //						Char:     ' ',
 //						Quantity: 2,
 //					},
-//					code{
+//					Code{
 //						Char:     'b',
 //						Quantity: 3,
 //					},
-//					code{
+//					Code{
 //						Char:     'e',
 //						Quantity: 4,
 //					},
@@ -275,18 +275,18 @@ func Test_build(t *testing.T) {
 //			want: binTree{
 //				zero: &binTree{
 //					zero: &binTree{
-//						val: code{
+//						val: Code{
 //							Char: 'b',
 //						},
 //					},
 //					one: &binTree{
 //						one: &binTree{
-//							val: code{
+//							val: Code{
 //								Char: ' ',
 //							},
 //						},
 //						zero: &binTree{
-//							val: code{
+//							val: Code{
 //								Char: 'o',
 //							},
 //						},
@@ -294,24 +294,24 @@ func Test_build(t *testing.T) {
 //				},
 //				one: &binTree{
 //					one: &binTree{
-//						val: code{
+//						val: Code{
 //							Char: 'e',
 //						},
 //					},
 //					zero: &binTree{
 //						one: &binTree{
-//							val: code{
+//							val: Code{
 //								Char: 'p',
 //							},
 //						},
 //						zero: &binTree{
 //							one: &binTree{
-//								val: code{
+//								val: Code{
 //									Char: '!',
 //								},
 //							},
 //							zero: &binTree{
-//								val: code{
+//								val: Code{
 //									Char: 'r',
 //								},
 //							},

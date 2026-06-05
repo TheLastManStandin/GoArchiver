@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"archiver/src/lib/compression"
-	"archiver/src/lib/compression/algorithms"
+	"archiver/src/lib/compression/algorithms/huffman"
+	"archiver/src/lib/compression/algorithms/shennon_fano"
+
 	//"archiver/src/lib/compression/algorithms/vlc"
 	"io"
 	"os"
@@ -34,7 +36,9 @@ func unpack(cmd *cobra.Command, args []string) {
 	//case "vlc":
 	//	decoder = vlc.New()
 	case "shennon_fano":
-		decoder = algorithms.New()
+		decoder = shennon_fano.New()
+	case "huffman":
+		decoder = huffman.New()
 	default:
 		cmd.PrintErr("Unsupported method: " + method + "\n")
 	}
