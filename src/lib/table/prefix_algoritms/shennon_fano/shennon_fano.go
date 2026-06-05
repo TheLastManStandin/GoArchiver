@@ -1,7 +1,8 @@
 package shennon_fano
 
 import (
-	"archiver/src/lib/compression/table"
+	"archiver/src/lib/table"
+	"archiver/src/lib/table/prefix_algoritms"
 	"fmt"
 	"math"
 	"sort"
@@ -10,8 +11,6 @@ import (
 
 type Generator struct {
 }
-
-type charStat map[rune]int
 
 type encodingTable map[rune]code
 
@@ -27,7 +26,7 @@ func NewGenerator() Generator {
 }
 
 func (g Generator) NewTable(text string) table.EncodingTable {
-	stat := newCharStat(text)
+	stat := prefix_algoritms.NewCharStat(text)
 
 	codeTable := build(stat)
 	return codeTable.Export()
@@ -49,7 +48,7 @@ func (et encodingTable) Export() table.EncodingTable {
 	return res
 }
 
-func build(stat charStat) encodingTable {
+func build(stat prefix_algoritms.CharStat) encodingTable {
 	codes := make([]code, 0, len(stat))
 
 	for ch, qty := range stat {
@@ -118,14 +117,4 @@ func bestDividerPosition(codes []code) int {
 		}
 	}
 	return bestPos
-}
-
-func newCharStat(text string) charStat {
-	res := charStat{}
-
-	for _, ch := range text {
-		res[ch]++
-	}
-
-	return res
 }

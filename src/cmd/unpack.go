@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"archiver/src/lib/compression"
-	"archiver/src/lib/compression/algorithms/shennon_fano"
-	"archiver/src/lib/compression/algorithms/vlc"
+	"archiver/src/lib/compression/algorithms"
+	//"archiver/src/lib/compression/algorithms/vlc"
 	"io"
 	"os"
 	"path/filepath"
@@ -31,10 +31,10 @@ func unpack(cmd *cobra.Command, args []string) {
 	method := cmd.Flag("method").Value.String()
 
 	switch method {
-	case "vlc":
-		decoder = vlc.New()
+	//case "vlc":
+	//	decoder = vlc.New()
 	case "shennon_fano":
-		decoder = shennon_fano.New()
+		decoder = algorithms.New()
 	default:
 		cmd.PrintErr("Unsupported method: " + method + "\n")
 	}
@@ -45,6 +45,7 @@ func unpack(cmd *cobra.Command, args []string) {
 	}
 	defer r.Close()
 
+	// TODO: Read file by chunks, not fully
 	data, err := io.ReadAll(r)
 	if err != nil {
 		handleError(err)

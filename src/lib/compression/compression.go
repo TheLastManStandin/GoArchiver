@@ -1,7 +1,7 @@
 package compression
 
 import (
-	"archiver/src/lib/compression/table"
+	"archiver/src/lib/table"
 	"strings"
 )
 
@@ -15,7 +15,7 @@ type Decoder interface {
 
 // encodeBinary encodes string to binary codes string
 // without spaces.
-// i.g.: !hello !wo!rld -> 1101011101010001...
+// i.g.: Hello World -> 1101011101010001...
 func EncodeBinary(str string, tbl table.EncodingTable) string {
 	var buf strings.Builder
 

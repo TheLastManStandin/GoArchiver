@@ -1,10 +1,10 @@
-package shennon_fano
+package algorithms
 
 import (
+	"archiver/src/lib/chunks"
 	"archiver/src/lib/compression"
-	"archiver/src/lib/compression/chunks"
-	"archiver/src/lib/compression/table"
-	"archiver/src/lib/compression/table/shennon_fano"
+	"archiver/src/lib/table"
+	"archiver/src/lib/table/prefix_algoritms/shennon_fano"
 	"bytes"
 	"encoding/binary"
 	"encoding/gob"
