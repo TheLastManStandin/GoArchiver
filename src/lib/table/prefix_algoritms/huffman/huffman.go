@@ -3,6 +3,7 @@ package huffman
 import (
 	"archiver/src/lib/table"
 	"archiver/src/lib/table/prefix_algoritms"
+	"slices"
 	"sort"
 )
 
@@ -97,12 +98,7 @@ func getHuffmanBinTree(codes []prefix_algoritms.Code) binTree {
 func insertNewBinTree(binTrees []binTree, newBinTree binTree) []binTree {
 	for i, val := range binTrees {
 		if val.priority >= newBinTree.priority {
-			//left := binTrees[:i]
-			//right := binTrees[i:]
-			//left = append(left, newBinTree)
-			//left = append(left, right...)
-			//binTrees = left
-			return append(binTrees[:i], append([]binTree{newBinTree}, binTrees[i:]...)...)
+			return slices.Insert(binTrees, i, newBinTree)
 		}
 	}
 

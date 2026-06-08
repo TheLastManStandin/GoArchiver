@@ -4,7 +4,7 @@ import (
 	"archiver/src/lib/compression"
 	"archiver/src/lib/compression/algorithms/huffman"
 	"archiver/src/lib/compression/algorithms/shennon_fano"
-
+	"fmt"
 	//"archiver/src/lib/compression/algorithms/vlc"
 	"errors"
 	"io"
@@ -59,27 +59,48 @@ func pack(cmd *cobra.Command, args []string) {
 
 	packed := encoder.Encode(string(data))
 
-	err = os.WriteFile(packedFileName(filePath), packed, 0644)
+	err = os.WriteFile(packedFileName(filepath.Dir(filePath), filePath), packed, 0644)
 	if err != nil {
 		handleError(err)
 	}
 }
 
-func packedFileName(path string) string {
+// packedFileName генерирует уникальное имя файла, добавляя суффикс, если файл уже существует.
+// dir - папка, в которой проверяется существование файла.
+// path - исходный путь к файлу.
+func packedFileName(dir string, path string) string {
 	fileName := filepath.Base(path)
 	//ext := filepath.Ext(fileName)
 	//baseName := strings.TrimSuffix(fileName, ext)
-	// TODO: add 1,2... if file exists
-	baseName := fileName
 
-	return baseName + packedExtension
+	// Формируем начальное имя: "имя.ext.pack"
+	// Если нужно убрать оригинальное расширение, замените fileName на baseName
+	fullName := fileName + packedExtension
+	fullPath := filepath.Join(dir, fullName)
+
+	// Проверяем, существует ли файл. Если да — ищем свободный номер.
+	counter := 1
+	for {
+		if _, err := os.Stat(fullPath); os.IsNotExist(err) {
+			// Файл не существует, имя свободно
+			break
+		}
+
+		// Если файл существует, добавляем счетчик перед .pack
+		// Пример: "имя.ext_1.pack"
+		fullName = fmt.Sprintf("%s_%d%s", fileName, counter, packedExtension)
+		fullPath = filepath.Join(dir, fullName)
+		counter++
+	}
+
+	return fullName
 }
 
 func init() {
 	rootCmd.AddCommand(packCmd)
 
 	// also change unpack
-	packCmd.Flags().StringP("method", "m", "", "compression methods: \n\tvlc\n\tshennon_fano")
+	packCmd.Flags().StringP("method", "m", "", "compression methods: \n\thuffman\n\tshennon_fano")
 
 	if err := packCmd.MarkFlagRequired("method"); err != nil {
 		panic(err)

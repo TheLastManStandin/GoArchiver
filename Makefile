@@ -6,6 +6,7 @@ MAIN_PACKAGE := ./src
 
 all: test build
 
+
 test:
 	$(GO) test ./...
 
